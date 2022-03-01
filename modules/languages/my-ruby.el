@@ -1,0 +1,217 @@
+;;; my-ruby.el --- ruby-mode configuration.
+
+;;; Commentary:
+
+;; Basic configuration for ruby-mode.
+
+;;; Code:
+
+(require 'my-company)
+(require 'my-dap)
+(require 'my-folding)
+(require 'my-lsp)
+(require 'my-projectile)
+(require 'my-string-inflection)
+(require 'my-toggle-quotes)
+
+(use-package ruby-mode
+  :straight (:type built-in)
+  :interpreter "ruby"
+  :mode
+  "Appraisals\\'"
+  "Berksfile\\'"
+  "Brewfile\\'"
+  "Capfile\\'"
+  "Gemfile\\'"
+  "Guardfile\\'"
+  "Podfile\\'"
+  "Puppetfile\\'"
+  "Rakefile\\'"
+  "Thorfile\\'"
+  "Vagrantfile\\'"
+  "\\.cap\\'"
+  "\\.gemspec\\'"
+  "\\.jbuilder\\'"
+  "\\.podspec\\'"
+  "\\.rabl\\'"
+  "\\.rake\\'"
+  "\\.ru\\'"
+  "\\.thor\\'"
+  "\\.rb\\'"
+
+  :bind (:map ruby-mode-map
+              ("C-j" . newline-and-indent)
+              ("RET" . newline-and-indent)
+              ("M-'" . ruby-toggle-string-quotes)
+              ("C-c C-l" . goto-line)
+              ("C-M-f" . sp-ruby-forward-sexp)
+              ("C-M-b" . sp-ruby-backward-sexp)
+              ("C-c C-u" . string-inflection-ruby-style-cycle))
+
+  :hook
+  (ruby-mode . my/ruby-mode-setup)
+
+  :init
+  (with-eval-after-load "projectile"
+    (add-to-list 'projectile-globally-ignored-directories "vendor/bundle")
+    (add-to-list 'projectile-globally-ignored-directories "vendor/ruby"))
+
+  (defun my/ruby-mode-setup ()
+    (setq-local c-tab-always-indent nil
+                ruby-align-chained-calls t
+                ruby-insert-encoding-magic-comment t
+                ruby-use-smie t
+                tab-width 2)
+
+    (company-mode +1)
+    (my/folding)
+    (subword-mode +1))
+
+  :config
+  ;; Use M-' instead to togle quote styles
+  (unbind-key "C-c '" ruby-mode-map)
+
+  ;; We never want to edit Rubinius bytecode
+  (add-to-list 'completion-ignored-extensions ".rbc")
+
+  ;; Set up hs-mode (HideShow) for Ruby
+  (add-to-list 'hs-special-modes-alist
+               `(ruby-mode
+                 ,(rx (or "def" "class" "module" "do" "if" "case")) ;; Block start
+                 ,(rx (or "end"))                                   ;; Block end
+                 ,(rx (or "#" "=begin"))                            ;; Comment start
+                 ruby-forward-sexp nil)))
+
+(use-package lsp-solargraph
+  :straight lsp-mode
+
+  :hook
+  (ruby-mode . my/lsp-ruby-mode-setup)
+
+  :custom
+  (lsp-solargraph-multi-root nil)
+  (lsp-solargraph-log-level "warn")
+
+  :init
+  (add-to-list 'safe-local-variable-values
+               '(lsp-solargraph-use-bundler . t))
+
+  (defun my/lsp-ruby-mode-setup ()
+    (lsp-deferred)))
+
+(use-package rufo
+  :defer t
+  :custom
+  (rufo-minor-mode-executable "rufo")
+  (rufo-minor-mode-use-bundler nil)
+  (rufo-minor-mode-debug-mode nil)
+
+  :init
+  (add-to-list 'safe-local-variable-values
+               '(rufo-minor-mode-use-bundler . t)))
+
+(use-package dap-ruby
+  :straight dap-mode
+  :after (ruby-mode dap-mode))
+
+(use-package bundler
+  :defer t)
+
+(use-package inf-ruby
+  :defer t
+  :hook
+  (ruby-mode . inf-ruby-minor-mode)
+  (inf-ruby-mode . my/inf-ruby-mode-setup)
+  (compilation-filter . inf-ruby-auto-enter)
+
+  :init
+  (defun my/inf-ruby-mode-setup ()
+    (company-mode -1))
+
+  :config
+  (unbind-key "C-c C-b" inf-ruby-minor-mode-map)
+  (unbind-key "C-c C-r" inf-ruby-minor-mode-map)
+  (unbind-key "C-c C-s" inf-ruby-minor-mode-map))
+
+(use-package rspec-mode
+  :defer t
+  :hook (rspec-mode . my/rspec-mode-setup)
+
+  :custom
+  (compilation-scroll-output t)
+  (rspec-primary-source-dirs '("app"))
+  (rspec-spec-command "env COVERAGE=0 rspec")
+  (rspec-use-opts-file-when-available nil)
+  (rspec-use-spring-when-possible nil)
+
+  :init
+  (defun my/rspec-mode-setup ())
+
+  :config
+  (rspec-install-snippets))
+
+(use-package rubocop
+  :defer t
+  :after ruby-mode
+  :bind (:map ruby-mode-map
+              ("C-c . f" . rubocop-check-current-file)
+              ("C-c . p" . rubocop-check-project)
+              ("C-c . d" . rubocop-check-directory)
+              ("C-c . F" . rubocop-autocorrect-current-file)
+              ("C-c . P" . rubocop-autocorrect-project)
+              ("C-c . D" . rubocop-autocorrect-directory)))
+
+(use-package rubocopfmt
+  :hook
+  (ruby-mode . rubocopfmt-mode)
+
+  :bind (:map ruby-mode-map
+              ("C-c C-f" . rubocopfmt))
+
+  :custom
+  (rubocopfmt-include-unsafe-cops t)
+  (rubocopfmt-show-errors 'echo)
+  (rubocopfmt-use-bundler-when-possible t)
+  (rubocopfmt-on-save-use-lsp-format-buffer t)
+
+  :init
+  (add-to-list 'safe-local-variable-values
+               '(rubocopfmt-include-unsafe-cops))
+  (add-to-list 'safe-local-variable-values
+               '(rubocopfmt-on-save-use-lsp-format-buffer)))
+
+(use-package ruby-compilation
+  :defer t)
+
+(use-package ruby-refactor
+  :defer t
+  :hook
+  (ruby-mode . ruby-refactor-mode)
+
+  :custom
+  (ruby-refactor-keymap-prefix (kbd "C-c C-="))
+  (ruby-refactor-add-parens t))
+
+(use-package ruby-tools
+  :defer t
+  :diminish ruby-tools-mode
+  :bind (:map ruby-tools-mode-map
+              ("C-'" . toggle-quotes))
+  :hook
+  (ruby-mode . ruby-tools-mode)
+
+  :config
+  ;; Unbind key used by my/resize-window module.
+  (unbind-key "C-;" ruby-tools-mode-map))
+
+(use-package seeing-is-believing
+  :defer t
+  :commands seeing-is-believing)
+
+(use-package yari
+  :defer t
+  :init
+  (define-key 'help-command (kbd "R") 'yari))
+
+(provide 'my-ruby)
+;;; my-ruby.el ends here
