@@ -9,7 +9,7 @@
 (setq load-prefer-newer t)
 (setq comp-deferred-compilation t)
 
-(load (expand-file-name "core/core-init.el"
+(load (expand-file-name "lisp/my-init.el"
                         (file-name-directory load-file-name)))
 
 ;;; init.el ends here
