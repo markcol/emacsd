@@ -47,9 +47,6 @@
 ;; Don't use macOS' Native fullscreen mode.
 (setq ns-use-native-fullscreen nil)
 
-;; Set initial frame to fullscreen when Emacs starts.
-;; (add-to-list 'initial-frame-alist '(fullscreen . maximized))
-
 ;; Override default ctrl+scroll text size keybindings on macOS to not have any
 ;; effect.
 (defun my/mouse-wheel-text-scale (_event)

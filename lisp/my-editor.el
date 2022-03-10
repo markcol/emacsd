@@ -10,8 +10,17 @@
 ;; but maintain correct appearance
 (setq-default tab-width 8)
 
+(setq lin-number-display-limit-width 10000)
+
+;; Make GNUTLS a bit safer.
+(setq gnutls-min-prime-bits 4096)
+
 ;; Newline at end of file
 (setq require-final-newline t)
+
+(setq echo-keystrokes 0.4)
+
+(setq larg-file-warning-threshold (* 25 1024 1024))
 
 ;; Visual Line mode - wrap lines
 (visual-line-mode t)
@@ -22,12 +31,72 @@
 ;; Delete the selection with a keypress
 (delete-selection-mode t)
 
+(transient-mark-mode t)
+
+(line-number-mode t)
+(column-number-mode t)
+
+;; It's much easier to move around lines based on how they are
+;; displayed, rather than the actual line. This helps a ton with long
+;; log file lines that may be wrapped:
+(setq line-move-visual t)
+
 ;; Separate sentences with a single space instead of two.
 (setq sentence-end-double-space nil)
 
 ;; Save place in files
 (setq save-place-file (expand-file-name "saveplace" my/cache-dir))
 (save-place-mode 1)
+
+;; Fix some weird color escape sequences.
+(setq system-uses-terminfo nil)
+
+;; Files must end with a newline
+(setq require-final-newline t)
+
+;; Sentances end with a period and single space.
+(setq sentence-end-double-space nil)
+
+;; Automatically revert file if it's changed on disk.
+(global-auto-revert-mode 1)
+
+;; Be quiet about reverting files
+(setq auto-revert-verbose nil)
+
+(setq tls-program
+      ;; Defaults:
+      ;; '("gnutls-cli --insecure -p %p %h"
+      ;;   "gnutls-cli --insecure -p %p %h --protocols ssl3"
+      ;;   "openssl s_client -connect %h:%p -no_ssl2 -ign_eof")
+      '("gnutls-cli -p %p %h"
+        "openssl s_client -connect %h:%p -no_ssl2 -no_ssl3 -ign_eof"))
+
+(when (eq system-type 'darwin)
+  (setq ns-use-native-fullscreen nil)
+  ;; brew install coreutils
+  (if (executable-find "gls")
+      (progn
+        (setq insert-directory-program "gls")
+        (setq dired-listing-switches "-lFaGh1v --group-directories-first"))
+    (setq dired-listing-switches "-ahlF"))
+  
+  (defun copy-from-osx ()
+    "Handle copy/paste intelligently on osx."
+    (let ((pbpaste (purecopy "/usr/bin/pbpaste")))
+      (if (and (eq system-type 'darwin)
+               (file-exists-p pbpaste))
+          (let ((tramp-mode nil)
+                (default-directory "~"))
+            (shell-command-to-string pbpaste)))))
+
+  (defun paste-to-osx (text &optional push)
+    (let ((process-connection-type nil))
+      (let ((proc (start-process "pbcopy" "*Messages*" "/usr/bin/pbcopy")))
+        (process-send-string proc text)
+        (process-send-eof proc))))
+  (setq interprogram-cut-function 'paste-to-osx
+        interprogram-paste-function 'copy-from-osx)
+  )
 
 ;; Electric behavior
 ;; (electric-layout-mode t)
@@ -149,6 +218,8 @@ indent yanked text (with prefix arg don't indent)."
 ;; saner regex syntax
 (require 're-builder)
 (setq reb-re-syntax 'string)
+
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 
 (provide 'my-editor)

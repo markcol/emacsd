@@ -38,7 +38,12 @@
 
 (use-package all-the-icons
   :after memoize
-  :if window-system)
+  :if (display-graphic-p))
+
+(use-package all-the-icons-dired
+  :defer t
+  :after all-the-icons
+  :hook (dired-mode . all-the-icons-dired-mode))
 
 (use-package doom-modeline
   :custom

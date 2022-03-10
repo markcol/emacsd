@@ -8,11 +8,14 @@
 ;;; Code:
 
 (use-package exec-path-from-shell
+  :defer t
   :custom
   (exec-path-from-shell-variables '("PATH"
                                     "MANPATH"
                                     "TMPDIR"
                                     "KUBECONFIG"
+                                    "JAVA_HOME"
+                                    "WORKON_HOME"
                                     "GOPATH"
                                     "GOBIN"
                                     "GOROOT"

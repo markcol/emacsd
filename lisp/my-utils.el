@@ -93,10 +93,13 @@ The function wraps a function with `ignore-errors' macro."
          (call-interactively (function ,orig-function))))))
 
 (defun my/add-lexical-binding ()
-  (beginning-of-buffer)
-  (end-of-line)
-  (insert " -*- lexical-binding: t; -*-")
-  (setq lexical-binding t))
+  "Add the lexical-binding flag to the current buffer."
+  (interactive)
+  (save-excursion
+    (beginning-of-buffer)
+    (end-of-line)
+    (when (not (search-backward "lexical-binding:" nil t))
+      (insert " -*- lexical-binding: t; -*-"))))
 
 (provide 'my-utils)
 ;;; my-utils.el ends here
