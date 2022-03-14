@@ -10,7 +10,7 @@
 ;; but maintain correct appearance
 (setq-default tab-width 8)
 
-(setq lin-number-display-limit-width 10000)
+(setq line-number-display-limit-width 10000)
 
 ;; Make GNUTLS a bit safer.
 (setq gnutls-min-prime-bits 4096)
@@ -20,7 +20,62 @@
 
 (setq echo-keystrokes 0.4)
 
-(setq larg-file-warning-threshold (* 25 1024 1024))
+(setq large-file-warning-threshold (* 25 1024 1024))
+
+;; It's much easier to move around lines based on how they are
+;; displayed, rather than the actual line. This helps a ton with long
+;; log file lines that may be wrapped:
+(setq line-move-visual t)
+
+;; Separate sentences with a single space instead of two.
+(setq sentence-end-double-space nil)
+
+(setq default-directory "~")
+(setq command-line-default-directory "~")
+
+;; Fix some weird color escape sequences.
+(setq system-uses-terminfo nil)
+
+;; Files must end with a newline
+(setq require-final-newline t)
+
+;; Sentances end with a period and single space.
+(setq sentence-end-double-space nil)
+
+;; Be quiet about reverting files
+(setq auto-revert-verbose nil)
+
+(setq whitespace-line-column 80)
+
+;; Backup files
+(setq backup-by-copying t
+      delete-old-versions t
+      kept-new-versions 10
+      kept-old-versions 0
+      vc-make-backup-files t
+      version-control t
+      backup-directory-alist
+      `((".*" . ,(expand-file-name "backup" my/cache-dir))))
+
+;; Auto-save files
+(let ((auto-save-dir (expand-file-name "autosave/" my/cache-dir)))
+  (unless (file-exists-p auto-save-dir)
+    (make-directory auto-save-dir))
+  (setq auto-save-interval 20
+        auto-save-file-name-transforms
+        `((".*" ,auto-save-dir t))))
+
+;; smart tab behavior - indent or complete
+(setq tab-always-indent 'complete)
+
+;; revert buffers automatically when underlying files are changed externally
+(global-auto-revert-mode t)
+(when (eq system-type 'darwin)
+  ;; File notifications seem unreliable on macOS.
+  (setq auto-revert-use-notify nil))
+
+;; Automatically revert file if it's changed on disk.
+(global-auto-revert-mode 1)
 
 ;; Visual Line mode - wrap lines
 (visual-line-mode t)
@@ -34,34 +89,12 @@
 (transient-mark-mode t)
 
 (line-number-mode t)
+
 (column-number-mode t)
-
-;; It's much easier to move around lines based on how they are
-;; displayed, rather than the actual line. This helps a ton with long
-;; log file lines that may be wrapped:
-(setq line-move-visual t)
-
-;; Separate sentences with a single space instead of two.
-(setq sentence-end-double-space nil)
 
 ;; Save place in files
 (setq save-place-file (expand-file-name "saveplace" my/cache-dir))
 (save-place-mode 1)
-
-;; Fix some weird color escape sequences.
-(setq system-uses-terminfo nil)
-
-;; Files must end with a newline
-(setq require-final-newline t)
-
-;; Sentances end with a period and single space.
-(setq sentence-end-double-space nil)
-
-;; Automatically revert file if it's changed on disk.
-(global-auto-revert-mode 1)
-
-;; Be quiet about reverting files
-(setq auto-revert-verbose nil)
 
 (setq tls-program
       ;; Defaults:
@@ -111,38 +144,6 @@
             (cons '(cursor-type . bar) (copy-alist default-frame-alist))))
       (blink-cursor-mode -1))
 
-;; Backup files
-(setq backup-by-copying t
-      delete-old-versions t
-      kept-new-versions 10
-      kept-old-versions 0
-      vc-make-backup-files t
-      version-control t
-      backup-directory-alist
-      `((".*" . ,(expand-file-name "backup" my/cache-dir))))
-
-;; Auto-save files
-(let ((auto-save-dir (expand-file-name "autosave/" my/cache-dir)))
-  (unless (file-exists-p auto-save-dir)
-    (make-directory auto-save-dir))
-  (setq auto-save-interval 20
-        auto-save-file-name-transforms
-        `((".*" ,auto-save-dir t))))
-
-;; smart tab behavior - indent or complete
-(setq tab-always-indent 'complete)
-
-;; revert buffers automatically when underlying files are changed externally
-(global-auto-revert-mode t)
-(when (eq system-type 'darwin)
-  ;; File notifications seem unreliable on macOS.
-  (setq auto-revert-use-notify nil))
-
-;; diminish keeps the modeline tidy
-(use-package diminish)
-
-(diminish 'visual-line-mode)
-
 ;; Enable mouse support when running in a console
 (unless window-system
   (require 'mouse)
@@ -159,11 +160,6 @@
   ;; (global-set-key [mouse-5] 'scroll-up-line)
   )
 
-;; Display whitespace characters globally
-(diminish 'whitespace-mode)
-(diminish 'global-whitespace-mode)
-(setq whitespace-line-column 80)
-
 ;; Customize Whitespace Characters
 ;;  - Newline: \u00AC = ¬
 ;;  - Tab:     \u2192 = →
@@ -178,12 +174,8 @@
                    indentation space-after-tab tab-mark newline-mark
                    empty)))
 
-;; enabled change region case commands
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
-
 ;; automatically indenting yanked text if in programming-modes
-(defun yank-advised-indent-function (beg end)
+(defun my/yank-advised-indent-function (beg end)
   "Do indentation, as long as the region isn't too large."
   (if (<= (- end beg) my/yank-indent-threshold)
       (indent-region beg end nil)))
@@ -206,7 +198,7 @@ indent yanked text (with prefix arg don't indent)."
            (or (derived-mode-p 'prog-mode)
                (member major-mode my/yank-indent-modes)))
       (let ((transient-mark-mode nil))
-        (yank-advised-indent-function (region-beginning) (region-end)))))
+        (my/yank-advised-indent-function (region-beginning) (region-end)))))
 
 ;; make a shell script executable automatically on save
 (add-hook 'after-save-hook
@@ -219,8 +211,11 @@ indent yanked text (with prefix arg don't indent)."
 (require 're-builder)
 (setq reb-re-syntax 'string)
 
-(defalias 'yes-or-no-p 'y-or-n-p)
+;; enabled change region case commands
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
 
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 (provide 'my-editor)
 ;;; my-editor.el ends here

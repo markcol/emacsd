@@ -6,6 +6,8 @@
 
 ;;; Code:
 
+(require 'my-lisp)
+(require 'my-completion)
 
 (use-package restart-emacs
   :commands restart-emacs)
@@ -107,23 +109,6 @@
   ;; ("C-c t p" . centaur-tabs-group-by-projectile-project)
   ;; ("C-c t g" . centaur-tabs-group-buffer-groups)
   )
-
-(use-package paredit
-  :diminish "()"
-  :commands (paredit-mode enable-paredit-mode paredit-forward-slurp-sexp
-                          paredit-forward-barf-sexp paredit-close-parenthesis)
-  :bind (("M-)" . paredit-forward-slurp-sexp)
-         ("C-(" . paredit-forward-barf-sexp)
-         (")"   . paredit-close-parenthesis))
-  :hook ((cider-repl-mode
-          clojure-mode
-          emacs-lisp-mode
-          geiser-repl-mode
-          ielm-mode
-          lisp-interaction-mode
-          lisp-mode
-          scheme-mode
-          slime-repl-mode) . enable-paredit-mode))
 
 (provide 'my-modules)
 ;;; my-modules.el ends here

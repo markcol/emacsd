@@ -6,12 +6,6 @@
 
 ;;; Code:
 
-;; TODO: Look into a better solution for this workaround.
-;;
-;; Hacky workaround for recursive load error caused by jka-compr when
-;; load-prefer-newer is enabled.
-(setq load-prefer-newer nil)
-;; (require 'jka-compr)
 (setq load-prefer-newer t)
 
 ;; Initialize straight.el
@@ -47,6 +41,28 @@
                `(,package . ,gitsha)))
 
 (straight-use-package 'use-package)
+
+(use-package diminish)
+(diminish 'visual-line-mode)
+(diminish 'whitespace-mode)
+(diminish 'global-whitespace-mode)
+
+
+(use-package system-packages
+  :commands (system-packages-use-sudo)
+  :custom
+  (system-packages-use-sudo nil)
+  :init
+  (when (eq system-type 'darwin)
+    (setq system-packages-package-manager 'brew)))
+
+(use-package dash
+  :config
+  (with-eval-after-load 'dash
+    (dash-enable-font-lock)))
+
+(use-package s)
+(use-package f)
 
 (provide 'my-packages)
 ;;; my-packages.el ends here
