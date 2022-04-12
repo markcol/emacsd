@@ -22,15 +22,15 @@
     (setq comp-deferred-compilation-deny-list deny-list)))
 
 (when (or (boundp 'comp-eln-load-path) (boundp 'native-comp-eln-load-path))
-  (let ((eln-cache-dir (expand-file-name "cache/eln-cache/"
+  (let ((eln-cache-dir (expand-file-name "var/eln-cache/"
                                          user-emacs-directory))
         (find-exec (executable-find "find")))
 
     (if (boundp 'native-comp-eln-load-path)
-        (setcar native-comp-eln-load-path eln-cache-dir)
-      (setcar comp-eln-load-path eln-cache-dir))
+	(setcar native-comp-eln-load-path eln-cache-dir))
+
     ;; Quitting emacs while native compilation in progress can leave zero byte
-    ;; sized *.eln files behind. Hence delete such files during startup.
+    ;; sized *.eln files behind. Delete such files during startup.
     (when find-exec
       (call-process find-exec nil nil nil eln-cache-dir
                     "-name" "*.eln" "-size" "0" "-delete" "-or"

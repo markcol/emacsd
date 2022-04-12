@@ -36,4 +36,14 @@
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 
+
+(use-package no-littering
+  :config
+  (with-eval-after-load 'recentf
+    (add-to-list 'recentf-exclude no-littering-var-directory)
+    (add-to-list 'recentf-exclude no-littering-etc-directory)))
+
+
+(use-package recentf :straight nil)
+
 ;;; init.el ends here
