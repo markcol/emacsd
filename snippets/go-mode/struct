@@ -1,5 +1,0 @@
-# key: struct
-# --
-type ${1:StructName} struct {
-	$0
-}

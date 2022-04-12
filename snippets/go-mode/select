@@ -1,6 +1,0 @@
-# key: select
-# --
-select {
-case $1:
-	$0
-}

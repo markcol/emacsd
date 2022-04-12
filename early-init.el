@@ -7,12 +7,13 @@
 ;;; Code:
 
 ;; Native-Comp
-(setq native-comp-speed 2
-      comp-speed 2)
-(setq native-comp-async-report-warnings-errors nil
-      comp-async-report-warnings-errors nil)
-(setq native-comp-async-query-on-exit t
-      comp-async-query-on-exit t)
+(setq
+ native-comp-speed 5
+ comp-speed 5
+ native-comp-async-report-warnings-errors nil
+ comp-async-report-warnings-errors nil
+ native-comp-async-query-on-exit t
+ comp-async-query-on-exit t)
 
 ;; Prevent native-compiling .dir-locals.el files.
 (let ((deny-list '("\\(?:[/\\\\]\\.dir-locals\\.el$\\)")))
@@ -44,30 +45,34 @@
 
 ;; Prevent the glimpse of un-styled Emacs by disabling these UI elements early.
 (setq tool-bar-mode nil
-      menu-bar-mode nil)
-(when (fboundp 'set-scroll-bar-mode)
-  (set-scroll-bar-mode nil))
+      menu-bar-mode nil
+      scroll-bar-mode nil)
 
 ;; Resizing the Emacs frame can be a terribly expensive part of changing the
 ;; font. By inhibiting this, we easily halve startup times with fonts that are
 ;; larger than the system default.
-(setq frame-inhibit-implied-resize t)
 
-(setq-default auto-save-default nil
-              aut-save-list-file-prefix nil
-              backup-directory-alist nil
-;;            inhibit-redisplay t
-;;            inhibit-message t
-              inhibit-splash-screen t
-              inhibit-startup-buffer-menu t
-              inhibit-startup-message t
-              inhibit-startup-screen t
-              initial-scratch-message nil)
+(setq-default 
+ frame-inhibit-implied-resize t
+ inhibit-message t
+ inhibit-redisplay t
+ inhibit-splash-screen t
+ inhibit-startup-buffer-menu t
+ inhibit-startup-message t
+ inhibit-startup-screen t
+ initial-scratch-message nil
+ )
 
-(add-hook 'window-setup-hook (lambda ()
-                               (setq-default inhibit-redisplay nil
-                                             ihibit-message nil)
-                               (setq frame-inhibit-implied-resize nil)
-                               (redisplay)))
+(defun my/window-setup-hook ()
+  "Restore some values set during early-init.el."
+  (interactive)
+  (setq-default
+   frame-inhibit-implied-resize nil
+   inhibit-message nil
+   inhibit-redisplay nil
+   )
+  (redisplay))
 
-;;; early-init.el ends here
+(add-hook 'window-setup-hook #'my/window-setup-hook)
+
+;;; Early-init.el ends here

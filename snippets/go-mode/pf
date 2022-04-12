@@ -1,3 +1,0 @@
-# key: pf
-# --
-fmt.Printf(${1:format string}, ${2:a ...interface{\}})$0

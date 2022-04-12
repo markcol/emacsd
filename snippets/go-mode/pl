@@ -1,3 +1,0 @@
-# key: pl
-# --
-fmt.Println($0)
