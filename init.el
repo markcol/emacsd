@@ -15,6 +15,7 @@
 
 (use-package paredit
   :defer t
+  :diminish "()"
   :hook
   ((
     cider-repl-mmode

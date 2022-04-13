@@ -26,8 +26,11 @@
 (put 'use-package 'lisp-indent-function 1)
 (require 'bind-key)
 
+(use-package diminish)
+
 (use-package gcmh
   :demand t
+  :diminish
   :config
   (gcmh-mode +1))
 
@@ -38,6 +41,7 @@
     (add-to-list 'recentf-exclude no-littering-etc-directory)))
 
 (use-package recentf :straight nil)
+
 
 (use-package exec-path-from-shell
   :init

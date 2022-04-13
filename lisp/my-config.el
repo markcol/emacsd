@@ -58,6 +58,8 @@
 (put 'upcase-region 'disabled nil)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
+(defalias 'describe-gnu-project 'ignore)
+;; (defalias 'view-emacs-news 'ignore)
 
 (with-system darwin
   (setq mac-command-modifier 'meta)
