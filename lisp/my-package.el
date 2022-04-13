@@ -56,12 +56,12 @@
   (add-to-list 'recentf-exclude "\\straight")
   (add-to-list 'recentf-exclude "\\var")
   (add-to-list 'recentf-exclude "\\data")
-  (recentf-mode))
+  (recentf-mode +1))
 
 (use-package saveplace
   ;; Save my place when opening/closing files:
   :config
-  (save-place-mode))
+  (save-place-mode +1))
 
 (use-package exec-path-from-shell
   :init

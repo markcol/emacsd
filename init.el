@@ -113,5 +113,16 @@
   (tooltip-mode +1)
   )
 
+(use-package ag
+  :demand
+  :ensure-system-package ag
+  :init
+  (setq
+   ag-reuse-window t
+   ag-highlight-search t)
+  :hook
+  (ag-search-finished-hook . (lambda ()  (pop-buffer next-error-last-buffer)))
+  )
+
 
 ;;; init.el ends here

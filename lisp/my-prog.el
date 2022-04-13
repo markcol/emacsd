@@ -17,12 +17,14 @@
   ;; No need to delay showing eldoc
   (setq eldoc-idle-delay 0))
 
-(use-package elisp-mode
+(use-package lisp-mode
   :straight nil
   :defer t
+  :commands (emacs-lisp-mode)
   :bind
   (:map emacs-lisp-mode-map
-        ("C-c C-b" . eval-buffer))
+        ("C-c C-b" . eval-buffer)
+	("RET" . comment-indent-new-line))
   :hook
   (emacs-lisp-mode . my/emacs-lisp-mode-hook)
   :preface

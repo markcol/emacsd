@@ -7,17 +7,23 @@
 ;;; Code:
 
 (setq
- make-backup-files nil
- auto-save-default nil
- create-lockfiles nil
+ ;; user-full-name "Mark Colburn"
  )
 
 (setq-default
  ;; Fill column defines wheere a paragraph should wrap.
  fill-column 80
+
+ ;; the C-type language indentation size.
+ c-basic-offet 4
  )
 
 (setq
+ ;; Don't create backup files. That's why we have version control.
+ make-backup-files nil
+ auto-save-default nil
+ create-lockfiles nil
+
  ;; Double-spaces after periods is morally wrong.
  sentence-end-double-space nil
  
@@ -67,6 +73,9 @@
 
  ;; Ensure a final newline at the end of a file
  require-final-newline t
+
+ ;; Do not warn when loading larcge files
+ large-file-warning-threshold 100000000
  )
 
 (set-charset-priority 'unicode)

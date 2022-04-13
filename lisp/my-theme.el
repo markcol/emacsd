@@ -40,7 +40,20 @@
 (load-theme 'modus-vivendi)
 (setq initial-frame-alist '(
 			    (width . 130)
-			    (height . 90)))
+			    (height . 90)
+			    (fullscreen . fullheight)))
+
+(use-package centaur-tabs
+  :bind
+  (("s-{" . #'centaur-tabs-backward)
+   ("s-}" . #'centaur-tabs-forward))
+  :config
+  (centaur-tabs-mode t)
+  :custom
+  (centaur-tabs-set-icons t)
+  (centaur-tabs-show-new-tab-button nil)
+  (centaur-tabs-set-close-button t)
+  (centaur-tabs-enable-ido-completion nil))
 
 (provide 'my-theme)
 ;;; my-theme.el ends here
