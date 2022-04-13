@@ -1,4 +1,4 @@
-;;; init.el -*- lexical-binding: t; -*-
+;;; init.el --- Emacs initialization file            -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
@@ -13,15 +13,38 @@
 (require 'my-config)
 (require 'my-package)
 
-
 (use-package paredit
-  :hook ((
-	  emacs-lisp-mode
-	  clojure-mode
-	  clojurescript-mode
-	  clojurec-mode
-	  cider-repl-mmode
-	  )
-	 . paredit-mode))
+  :defer t
+  :hook
+  ((
+    cider-repl-mmode
+    clojure-mode
+    clojurec-mode
+    clojurescript-mode
+    emacs-lisp-mode
+    )
+   . paredit-mode))
+
+(use-package autoinsert
+  :defer t
+  :hook
+  (find-file . auto-insert))
+
+(use-package checkdoc
+  :defer t
+  :hook
+  (elisp-mode . checkdoc-minor-mode))
+
+(use-package highlight-sexp
+  :: TODO(mark): Fix highlighting color
+  :disabled
+  :defer t
+  :hook
+  ((
+    clojure-mode
+    emacs-lisp-mode
+    lisp-mode
+    )
+   . highlight-sexp-mode))
 
 ;;; init.el ends here
