@@ -24,9 +24,14 @@
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 (put 'use-package 'lisp-indent-function 1)
-(require 'bind-key)
 
-(use-package diminish)
+(require 'bind-key)
+(use-package s :defer t)
+(use-package dash :defer t)
+
+(use-package diminish
+  :config
+  (diminish 'visual-line-mode))
 
 (use-package gcmh
   :demand t
@@ -40,19 +45,35 @@
     (add-to-list 'recentf-exclude no-littering-var-directory)
     (add-to-list 'recentf-exclude no-littering-etc-directory)))
 
-(use-package recentf :straight nil)
+(use-package recentf
+  :straight nil
+  :after no-littering
+ :custom
+  (recentf-max-saved-items 50)
+  (recentf-max-menu-items 25)
+  :config
+  (add-to-list 'recentf-exclude "\\elpa")
+  (add-to-list 'recentf-exclude "\\straight")
+  (add-to-list 'recentf-exclude "\\var")
+  (add-to-list 'recentf-exclude "\\data")
+  (recentf-mode))
 
+(use-package saveplace
+  ;; Save my place when opening/closing files:
+  :config
+  (save-place-mode))
 
 (use-package exec-path-from-shell
   :init
   (exec-path-from-shell-initialize))
 
 (use-package system-packages
+  :after (exec-path-from-shell)
   :custom
   (system-packages-noconfirm t))
 
 (use-package use-package-ensure-system-package
-  :after (:all system-packages exec-path-from-shell))
+  :after (system-packages))
 
 (provide 'my-package)
 ;;; my-package.el ends here
