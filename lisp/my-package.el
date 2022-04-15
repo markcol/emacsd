@@ -36,6 +36,12 @@
 (use-package gcmh
   :demand t
   :diminish
+  :hook
+  ;; collect garbage when emacs has loss focus
+  (focus-out-hook . gcmh-idle-garbage-collect)
+  :custom
+  (gcmh-idle-delay 10)
+  (gcmh-high-cons-threshold 104857600)
   :config
   (gcmh-mode +1))
 

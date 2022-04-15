@@ -76,6 +76,9 @@
 
  ;; Do not warn when loading larcge files
  large-file-warning-threshold (* 100 1024 1024)
+
+ ;; Don't compact font caches during GC operations.
+ inhibit-compacting-font-caches t
  )
 
 (set-charset-priority 'unicode)
