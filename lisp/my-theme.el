@@ -36,24 +36,47 @@
   )
 
 (set-frame-font "Fira Code-13" t t)
-
-(load-theme 'modus-vivendi)
 (setq initial-frame-alist '(
 			    (width . 130)
 			    (height . 90)
 			    (fullscreen . fullheight)))
 
-(use-package centaur-tabs
-  :bind
-  (("s-{" . #'centaur-tabs-backward)
-   ("s-}" . #'centaur-tabs-forward))
+(use-package kaolin-themes
+  :after all-the-icons
   :config
-  (centaur-tabs-mode t)
-  :custom
-  (centaur-tabs-set-icons t)
-  (centaur-tabs-show-new-tab-button nil)
-  (centaur-tabs-set-close-button t)
-  (centaur-tabs-enable-ido-completion nil))
+  (load-theme 'kaolin-aurora t)
+  (with-eval-after-load 'treemacs
+    (kaolin-treemacs-theme)))
+
+
+(use-package centaur-tabs
+  ;; modern tabs
+  :bind
+  (("C-<prior>" . centaur-tabs-backward)
+   ("C-<next>" . centaur-tabs-forward))
+  :hook
+  ((
+    dashboard-mode
+    dired-mode
+    helpful-mode
+    org-agenda-mode
+    calendar-mode
+    term-mode
+    )
+   . centaur-tabs-local-mode)
+  :config
+  (setq
+   centaur-tabs-enable-ido-completion nil
+   centaur-tabs-modified-marker "*"
+   centaur-tabs-set-bar 'left
+   centaur-tabs-set-close-button t
+   centaur-tabs-set-icons t
+   centaur-tabs-set-modified-marker t
+   centaur-tabs-show-new-tab-button nil
+   centaur-tabs-style "bar"
+   )
+  (centaur-tabs-headline-match)
+  (centaur-tabs-mode t))
 
 (provide 'my-theme)
 ;;; my-theme.el ends here

@@ -75,7 +75,7 @@
  require-final-newline t
 
  ;; Do not warn when loading larcge files
- large-file-warning-threshold 100000000
+ large-file-warning-threshold (* 100 1024 1024)
  )
 
 (set-charset-priority 'unicode)

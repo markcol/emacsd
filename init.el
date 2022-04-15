@@ -9,6 +9,9 @@
 (setq load-prefer-newer t)
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file :noerror)
+
 (require 'my-funcs)
 (require 'my-config)
 (require 'my-package)
@@ -19,6 +22,13 @@
 (bind-key* "C-c /" #'comment-dwim)	
 (when window-system
   (unbind-key "C-z"))
+
+;; protects against accidental mouse movements
+;; http://stackoverflow.com/a/3024055/1041691
+(add-hook 'mouse-leave-buffer-hook
+          (lambda () (when (and (>= (recursion-depth) 1)
+                           (active-minibuffer-window))
+                  (abort-recursive-edit))))
 
 (use-package which-key
   :diminish
@@ -124,5 +134,42 @@
   (ag-search-finished-hook . (lambda ()  (pop-buffer next-error-last-buffer)))
   )
 
+(use-package project
+  :straight nil
+  :defer t)
+
+(use-package rainbow-mode)
+
+(use-package hungry-delete
+  :diminish
+  :hook
+  ((text-mode prog-mode) . hungry-delete-mode))
+
+(use-package expand-region
+  :bind
+  (("C-=" . er/expand-region)
+   ("C-+" . er/contract-region)
+   :map mode-specific-map
+   :prefix-map region-prefix-map
+   :prefix "r"
+   ("(" . er/mark-inside-pairs)
+   (")" . er/mark-outside-pairs)
+   ("'" . er/mark-inside-quotes)
+   ([34] . er/mark-outside-quotes) ; it's just a quotation mark
+   ("o" . er/mark-org-parent)
+   ("u" . er/mark-url)
+   ("b" . er/mark-org-code-block)
+   ("." . er/mark-method-call)
+   (">" . er/mark-next-accessor)
+   ("w" . er/mark-word)
+   ("d" . er/mark-defun)
+   ("e" . er/mark-email)
+   ("," . er/mark-symbol)
+   ("<" . er/mark-symbol-with-prefix)
+   (";" . er/mark-comment)
+   ("s" . er/mark-sentence)
+   ("S" . er/mark-text-sentence)
+   ("p" . er/mark-paragraph)
+   ("P" . er/mark-text-paragraph)))
 
 ;;; init.el ends here
