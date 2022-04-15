@@ -19,7 +19,7 @@
 (require 'my-prog)
 
 (unbind-key "s-t")
-(bind-key* "C-c /" #'comment-dwim)	
+(bind-key* "C-c /" #'comment-dwim)
 (when window-system
   (unbind-key "C-z"))
 
@@ -27,8 +27,8 @@
 ;; http://stackoverflow.com/a/3024055/1041691
 (add-hook 'mouse-leave-buffer-hook
           (lambda () (when (and (>= (recursion-depth) 1)
-                           (active-minibuffer-window))
-                  (abort-recursive-edit))))
+                                (active-minibuffer-window))
+                       (abort-recursive-edit))))
 
 (use-package which-key
   :diminish
@@ -136,7 +136,42 @@
 
 (use-package project
   :straight nil
-  :defer t)
+  :defer t
+  :bind (:map project-prefix-map
+              ("D" . 'my/project-edit-direnv)
+              ("d" . 'project-dired)
+              ("e" . 'my/project-edit-dir-locals)
+              ("k" . 'my/project-kill-buffers)
+              ("n" . 'my/project-open-new-project)
+              ("p" . 'my/project-switch))
+  :preface
+  (defun my/project-edit-dir-locals ()
+    "Edit .dir-locals.el file in project root."
+    (interactive)
+    (find-file (expand-file-name ".dir-locals.el" (my/project-root))))
+
+  (defun my/project-edit-direnv ()
+    "Edit .envrc file in project root."
+    (interactive)
+    (find-file (expand-file-name ".envrc" (my/project-root))))
+
+  (defun my/project-root ()
+    "Return project root path."
+    (project-current)
+    ;; We need to extract third element because `project-current'
+    ;; returns project's information as a list of 3 element,
+    ;; for example (vc Git "project-path")
+    (nth 2 (project-current)))
+
+  (defun my/project-p ()
+    (project-current))
+
+  (defun my/project-name ()
+    "Get project name extracting latest part of project path."
+    (if (my/project-p)
+        (second (reverse (split-string (my/project-root) "/")))
+      nil)))
+
 
 (use-package rainbow-mode)
 
