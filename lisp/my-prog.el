@@ -113,12 +113,6 @@
   :defer t
   )
 
-(use-package project
-  :straight nil
-  :defer t
-  :init
-  (setq project-vc-merge-submodules nil))
-
 (use-package highlight-sexp
   :: TODO(mark): Fix highlighting color
   :disabled
@@ -218,6 +212,12 @@
   :custom-update
   (atomic-chrome-url-major-mode-alist
    '(("atlassian\\.net$" . jira-markup-mode))))
+
+(use-package rg
+  :ensure-system-package rg)
+
+(use-package ag
+  :ensure-system-package ag)
 
 (provide 'my-prog)
 ;;; my-prog.el ends here

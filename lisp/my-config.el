@@ -79,15 +79,19 @@
 
  ;; Don't compact font caches during GC operations.
  inhibit-compacting-font-caches t
+
+ ;; enable recursive edit in minibuffer
+ enable-recursive-minibuffers t
  )
 
 (set-charset-priority 'unicode)
 (prefer-coding-system 'utf-8-unix)
 
-(global-hl-line-mode t)
-(delete-selection-mode t)
-(column-number-mode)
-(line-number-mode)
+(global-hl-line-mode +1)
+(delete-selection-mode +1)
+(column-number-mode +1)
+(line-number-mode +1)
+(minibuffer-depth-indicate-mode +1)
 
 (put 'narrow-to-region 'disabled nil)
 (put 'downcase-region 'disabled nil)

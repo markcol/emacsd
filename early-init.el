@@ -37,6 +37,7 @@
                     "-name" "*.eln.tmp" "-size" "0" "-delete"))))
 
 ;; Temporarily set the GC threshold to improve startup performance.
+;; This will be reset by the GCMH package after it loads.
 (setq gc-cons-threshold most-positive-fixnum)
 
 ;; Disable Emacs 27's automatic package.el initialization before the init.el
@@ -52,10 +53,14 @@
 ;; font. By inhibiting this, we easily halve startup times with fonts that are
 ;; larger than the system default.
 
-(setq-default 
- frame-inhibit-implied-resize t
- inhibit-message t
- inhibit-redisplay t
+(setq-default
+ ;; setting these three values to `#t' may improve startup time, but it mans
+ ;; that emacs will appear to hang unil all packages and system packages are
+ ;; loaded.
+ frame-inhibit-implied-resize nil
+ inhibit-message nil
+ inhibit-redisplay nil
+ 
  inhibit-splash-screen t
  inhibit-startup-buffer-menu t
  inhibit-startup-message t
@@ -69,8 +74,7 @@
   (setq-default
    frame-inhibit-implied-resize nil
    inhibit-message nil
-   inhibit-redisplay nil
-   )
+   inhibit-redisplay nil)
   (redisplay))
 
 (add-hook 'window-setup-hook #'my/window-setup-hook)

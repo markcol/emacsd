@@ -39,6 +39,11 @@
     (mark-defun)
     (indent-region (point) (mark))))
 
+(defun switch-to-scratch-buffer ()
+  "Switch to the current session's scratch buffer."
+  (interactive)
+  (switch-to-buffer "*scratch*"))
+
 (defun my/align-region-to-equals (begin end)
   "Align region (specified with BEGIN and END) to equal signs."
   (interactive "r")

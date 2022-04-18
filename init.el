@@ -17,11 +17,14 @@
 (require 'my-package)
 (require 'my-theme)
 (require 'my-prog)
+(require 'my-git)
+(require 'my-org)
 
 (unbind-key "s-t")
 (bind-key* "C-c /" #'comment-dwim)
 (when window-system
   (unbind-key "C-z"))
+(bind-key "C-c a s" #'switch-to-scratch-buffer)
 
 ;; protects against accidental mouse movements
 ;; http://stackoverflow.com/a/3024055/1041691
@@ -138,12 +141,24 @@
   :straight nil
   :defer t
   :bind (:map project-prefix-map
-              ("D" . 'my/project-edit-direnv)
-              ("d" . 'project-dired)
-              ("e" . 'my/project-edit-dir-locals)
-              ("k" . 'my/project-kill-buffers)
-              ("n" . 'my/project-open-new-project)
-              ("p" . 'my/project-switch))
+              ("f" . project-find-file)
+              ("m" . project-compile)
+              ("D" . my/project-edit-direnv)
+              ("d" . project-dired)
+              ("e" . my/project-edit-dir-locals)
+              ("k" . my/project-kill-buffers)
+              ("n" . my/project-open-new-project)
+              ("p" . my/project-switch))
+  :custom
+  ;; This is one of my favorite things: you can customize
+  ;; the options shown upon switching projects.
+  (project-switch-commands
+   '((project-find-file "Find file")
+     ;; (magit-project-status "Magit" ?g)
+     ;; (deadgrep "Grep" ?h)
+     ))
+  (compilation-always-kill t)
+  (project-vc-merge-submodules nil)
   :preface
   (defun my/project-edit-dir-locals ()
     "Edit .dir-locals.el file in project root."
@@ -172,8 +187,9 @@
         (second (reverse (split-string (my/project-root) "/")))
       nil)))
 
-
-(use-package rainbow-mode)
+(use-package rainbow-mode
+  :hook
+  (prog-mode . rainbow-mode))
 
 (use-package hungry-delete
   :diminish
