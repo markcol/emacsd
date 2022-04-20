@@ -53,7 +53,6 @@
   :hook
   ((
     prog-mode
-    feature-mode
     ) . yas-minor-mode)
   :config
   (yas-reload-all))
